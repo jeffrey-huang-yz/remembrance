@@ -13,7 +13,7 @@
 
 .title-text{
   position: absolute;
-  top: 36%;
+  top: 32%;
   left: 50%;
   transform: translate(-50%, -50%);
   margin-top: 3rem;
@@ -21,13 +21,55 @@
   padding: 20px;
   text-align: center;
   z-index: 10;
-  font-weight: 700;
   font-size: 200px;
   text-transform: uppercase; 
   background: -webkit-linear-gradient(rgb(255, 255, 255), #000000);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  user-select: none;
+
+
 }
+
+.bubble-text {
+  
+  color: hsl(0, 0%, 50%);
+  user-select: none;
+
+  &.split-text {
+    display: inline-flex;
+  }
+
+  & .split-char {
+    font-weight: 100;
+    transition: font-weight 0.1s ease;
+
+    &:hover {
+      font-weight: 900;
+      color: hsl(0, 0%, 100%);
+    }
+
+    /* // right side */
+    &:hover + .split-char {
+      font-weight: 700;
+      color: hsl(0, 0%, 80%);
+    }
+    &:hover + .split-char + .split-char {
+      font-weight: 400;
+      color: hsl(0, 0%, 60%);
+    }
+
+    /* // left side */
+    &:has(+ .split-char:hover) {
+      font-weight: 700;
+      color: hsl(0, 0%, 80%);
+    }
+    &:has(+ .split-char + .split-char:hover) {
+      font-weight: 400;
+      color: hsl(0, 0%, 60%);
+    }
+  }
+}  
 
 .login-container {
   position: absolute;
