@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import './LoginPage.scss';
-
+import axios from 'axios';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 const SplitText = ({ target }) => {
   useEffect(() => {
     function splitTextIntoSpans(target) {
@@ -28,9 +30,19 @@ const SplitText = ({ target }) => {
 };
 
 const LoginPage = () => {
-  const handleLogin = (event) => {
+  const navigate = useNavigate();
+  const [redirectUrl, setRedirectUrl] = useState(null);
+  const handleLogin = async (event) => {
     console.log('clicked login')
     event.preventDefault(); 
+    try{
+      const response = await axios.get('http://localhost:5000/login');
+      console.log(response);
+      const data = response.data;
+      setRedirectUrl(data.redirect);
+    }catch(error){
+      console.error(error);
+    }
   };
 
   return (

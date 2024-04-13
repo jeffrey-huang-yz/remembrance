@@ -77,13 +77,14 @@
   left: 50%;
   transform: translate(-50%, -50%); /* Added this line to center the container */
   margin-top: 3rem;
-  border-radius: 10px;
+  border-radius: 40px;
   background-color: #f0f0f0;
   padding: 20px;
   width: 500px;
   z-index: 20;
   text-align: center;
   box-shadow: 0 0 100px rgba(0, 0, 0, 1);
+  user-select: none;
   
 }
 
