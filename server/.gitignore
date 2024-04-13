@@ -4,7 +4,7 @@ client_file.json
 /.pnp
 .pnp.js
 .env
-
+venv/
 # testing
 /coverage
 
