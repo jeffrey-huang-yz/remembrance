@@ -36,10 +36,7 @@ const LoginPage = () => {
     console.log('clicked login')
     event.preventDefault(); 
     try{
-      const response = await axios.get('http://localhost:5000/login');
-      console.log(response);
-      const data = response.data;
-      setRedirectUrl(data.redirect);
+      window.location.href = 'http://localhost:5000/login';
     }catch(error){
       console.error(error);
     }
