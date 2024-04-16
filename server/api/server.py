@@ -61,10 +61,10 @@ google = oauth.register(
 
 
 yolo_model = YOLO('yolov8s.pt')
-yolo_model.conf = 0.25  # NMS confidence threshold
-yolo_model.iou = 0.45  # NMS IoU threshold
+yolo_model.conf = 0.6  # NMS confidence threshold
+yolo_model.iou = 0.5    # NMS IoU threshold
 yolo_model.agnostic = False  # NMS class-agnostic
-yolo_model.multi_label = False  # NMS multiple labels per box
+yolo_model.multi_label = False  # NMS multiple labels per box  
 yolo_model.max_det = 1000  # maximum number of detections per image
 
 # ResNet model loading
@@ -100,25 +100,14 @@ def detect_objects(image_path):
     image = Image.open(BytesIO(response.content)).convert('RGB')
     results = yolo_model(image)
     print(results)
-    for result in results:
-        boxes = result.boxes  # Boxes object for bounding box outputs
-        masks = result.masks  # Masks object for segmentation masks outputs
-        keypoints = result.keypoints  # Keypoints object for pose outputs
-        probs = result.probs  # Probs object for classification outputs\
-        
-        result.show()  # display to screen
+    
+    result.show()  # display to screen
     
     # Retrieve class names from the model
-    class_names = yolo_model.names
-    
-    # Iterate over each detected object and print its name
-    for box, score, category in zip(boxes, scores, categories):
-        class_index = int(category)
-        class_name = class_names[class_index]
-        print("Bounding Box:", box, "Score:", score, "Class:", class_name)
-    
-    print() 
-    return boxes, scores, categories
+    class_names = result.names      
+    print("class names:", class_names)
+
+    return class_names
 
 def extract_features(image_url):
     response = requests.get(image_url)

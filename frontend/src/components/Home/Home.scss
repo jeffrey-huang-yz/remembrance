@@ -47,3 +47,18 @@ body {
     transform: translate3d(0,5px,0);
   }
 }
+
+.blur-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  background-size: cover;
+  background-position: center;
+  filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); /* For Safari */
+  backdrop-filter: blur(10px);
+  z-index: -1; /* Ensure the blur background stays behind other content */
+}
