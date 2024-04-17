@@ -12,16 +12,25 @@ const Home = () => {
 
     const [update, setUpdate] = useState(false)
     useEffect(() => {
-        axios.get('http://localhost:5000/update-photos')
-            .then(response => {
-                console.log('Data received:', response.data);   
-                //Set update status to true to remove blur effect and loading text
-                setUpdate(true)
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-            });
-    }, []); 
+        axios.get('http://localhost:5000/update-photos', {
+            withCredentials: true  // Set to true to send cookies
+        })
+        .then(response => {
+            console.log('Data received:', response.data);   
+            // Set update status to true to remove blur effect and loading text
+            setUpdate(true);
+        })
+        .catch(error => {
+            if (error.response) {
+                console.error('Server Error:', error.response.data);
+                console.error('Status Code:', error.response.status);
+            } else if (error.request) {
+                console.error('Network Error:', error.request);
+            } else {
+                console.error('Error:', error.message);
+            }
+        });
+    }, []);
 
 
 
@@ -33,8 +42,9 @@ const Home = () => {
                 <h1>Update Complete!</h1>
                 <p>Your photos have been updated.</p>
                 <Card
+                    className='submit-card'
                     style={{ margin: 'auto', width: '50%' }}
-                    actions={[<Button type="primary">Submit</Button>]}
+                    actions={[<Button type="primary" className='submit'>Submit</Button>]}
                 >
                     <DragAndDrop addFile={addFile} removeFile={removeFile} />
                 </Card>         

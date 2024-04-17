@@ -8,13 +8,16 @@ const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
     useEffect(() => {
       // Check if user is logged in by making an API request to the backend
-      fetch('/check-login')
-        .then(response => {
+      fetch('http://localhost:5000/check-login', {
+          credentials: 'include' // Include cookies in the request
+      })
+      .then(response => {
           if (response.ok) {
-            setIsLoggedIn(true);
+              setIsLoggedIn(true);
           }
-        });
+      });
     }, []);
+
 
   const handleLogin = () => {
     // Redirect user to backend for Google OAuth login

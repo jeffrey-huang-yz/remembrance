@@ -18,26 +18,31 @@ from pymongo import MongoClient
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
-app.secret_key = 'your_secret_key'
+app.secret_key = 'hahahahahah1h23h12hHAHAHAHHA'
 load_dotenv()
+
+
 #MongoDB
 client = MongoClient(os.getenv('MONGO_URI'))
-db = client['user-photos']
+db = client['remembrance']
 
-def insert_data(photo_link, user_id, objects, features):
+
+def insert_data(image, user_email, objects, features):
     collection = db['user-photos']
+    # Convert NumPy arrays to Python lists
+    features_list = features.tolist()
     data = {
-        'photo_link': photo_link,
-        'user_id': user_id,
+        'image': image,
+        'user_email': user_email,
         'objects': objects,
-        'features': features
+        'features': features_list
     }
     collection.insert_one(data)
 
 def check_image_existence(photo_link):
     collection = db['user-photos']
     # Query the database to check if the photo exists already
-    result = collection.find_one({'photo_link': photo_link})
+    result = collection.find_one({'image': photo_link})
     return result is not None
 
 # Initialize OAuth object
@@ -61,8 +66,8 @@ google = oauth.register(
 
 
 yolo_model = YOLO('yolov8s.pt')
-yolo_model.conf = 0.6  # NMS confidence threshold
-yolo_model.iou = 0.5    # NMS IoU threshold
+yolo_model.conf = 0.25  # NMS confidence threshold
+yolo_model.iou = 0.45  # NMS IoU threshold
 yolo_model.agnostic = False  # NMS class-agnostic
 yolo_model.multi_label = False  # NMS multiple labels per box  
 yolo_model.max_det = 1000  # maximum number of detections per image
@@ -99,12 +104,20 @@ def detect_objects(image_path):
     response = requests.get(image_path)
     image = Image.open(BytesIO(response.content)).convert('RGB')
     results = yolo_model(image)
-    print(results)
-    result.show()  # display to screen
-    # Retrieve class names from the model
-    class_names = result.names      
-    print("class names:", class_names)
+    
+    # Initialize an empty list to store class names
+    class_names = []
 
+    for result in results:
+        boxes = result.boxes  # Boxes object for bounding box outputs
+        masks = result.masks  # Masks object for segmentation masks outputs
+        keypoints = result.keypoints  # Keypoints object for pose outputs
+        probs = result.probs  # Probs object for classification outputs
+        
+        # Append class names to the list
+        class_names.extend(result.names)
+        
+    print(class_names)
     return class_names
 
 def extract_features(image_url):
@@ -115,6 +128,7 @@ def extract_features(image_url):
         image_tensor = image_tensor.unsqueeze(0)
         with torch.no_grad():
             features = resnet_model(image_tensor)
+        print(features.squeeze().numpy())
         return features.squeeze().numpy()
     else:
         print("Error downloading image:", response.status_code)
@@ -139,10 +153,15 @@ def retrieve_user_photos():
 @cross_origin(supports_credentials=True, )
 def update_photos():
     if 'google_token' not in session:
-        return redirect(url_for('login'))
+        return redirect('http://localhost:3000/')
+    
+    print(session)
     print("Processing user's photos")
     # Retrieve user's photos from Google Photos API
     photos = retrieve_user_photos()
+
+    user_email = session['google_token']['userinfo']['email']
+
     for photo in photos:
         image_url = photo['baseUrl']
         print("Processing photo:", photo['filename'])
@@ -154,7 +173,7 @@ def update_photos():
             if features is not None:
                 print("Features extracted for photo:", photo['filename'])
                 # Insert data into MongoDB
-                insert_data(image_url, session.get('google_token')['user_id'], objects, features)
+                insert_data(image_url, user_email, objects, features)
         else:
             print("Skipping photo - Already exists in the database")
     return 'Processing complete'
@@ -166,7 +185,7 @@ def check_login():
     if 'google_token' in session:
         return jsonify({'isLoggedIn': True})
     else:
-        return jsonify({'isLoggedIn': False})
+        return redirect('http://localhost:3000/')
     
 if __name__ == '__main__':
     app.run(debug=True)
