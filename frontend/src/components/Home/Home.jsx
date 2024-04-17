@@ -1,11 +1,18 @@
 import React, { useState } from 'react'
 import './Home.scss'
 import { useEffect } from 'react'
+import axios from 'axios'
+import { Button, Card } from 'antd';
+import DragAndDrop from '../DragAndDrop/DragAndDrop';
+import useFileSelection from '../../hooks/useFileSelection';
+
 
 const Home = () => {
+    const [addFile, removeFile] = useFileSelection();
+
     const [update, setUpdate] = useState(false)
     useEffect(() => {
-        axios.put('/update-photos')
+        axios.get('http://localhost:5000/update-photos')
             .then(response => {
                 console.log('Data received:', response.data);   
                 //Set update status to true to remove blur effect and loading text
@@ -18,26 +25,37 @@ const Home = () => {
 
 
 
-  return (
-    <div className={`home ${update ? 'update-complete' : 'update-incomplete'}`}>
-            {update ? (
-                <div className="content">
-                    {/* Text to display when update is complete */}
-                    <h1>Update Complete!</h1>
-                    <p>Your photos have been updated.</p>
-                    
+    return (
+        <div className={`home ${update ? 'update-complete' : 'update-incomplete'}`}>
+        {update ? (
+            <div className="content">
+              {/* Text to display when update is complete */}
+                <h1>Update Complete!</h1>
+                <p>Your photos have been updated.</p>
+                <Card
+                    style={{ margin: 'auto', width: '50%' }}
+                    actions={[<Button type="primary">Submit</Button>]}
+                >
+                    <DragAndDrop addFile={addFile} removeFile={removeFile} />
+                </Card>         
+                <div className='ocean'>
+                    <div className='wave'></div>
+                    <div className='wave'></div>
                 </div>
-            ) : (
-                <div className="blur-background">
-                    
-                </div>
-            )}
-            <div className='ocean'>
-                <div className='wave'></div>
-                <div className='wave'></div>
             </div>
+        ) : (
+            <div>
+                <h1 className='loading animate-flicker'>Processing Your Google Photos</h1>
+                <div className="blur-background">
+                    <div className='ocean'>
+                        <div className='wave'></div>
+                        <div className='wave'></div>
+                    </div>
+                </div>
+            </div>
+        )}
         </div>
-    );
+    );                                              
 }
 
 export default Home

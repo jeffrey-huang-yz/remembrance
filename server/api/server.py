@@ -19,7 +19,7 @@ from pymongo import MongoClient
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 app.secret_key = 'your_secret_key'
-
+load_dotenv()
 #MongoDB
 client = MongoClient(os.getenv('MONGO_URI'))
 db = client['user-photos']
@@ -84,7 +84,7 @@ def login():
     return google.authorize_redirect(redirect_uri=url_for('auth', _external=True))
 
 @app.route('/auth/google/callback')
-@cross_origin()
+@cross_origin(supports_credentials=True, )
 def auth():
     token = google.authorize_access_token()
     session['google_token'] = token
@@ -100,9 +100,7 @@ def detect_objects(image_path):
     image = Image.open(BytesIO(response.content)).convert('RGB')
     results = yolo_model(image)
     print(results)
-    
     result.show()  # display to screen
-    
     # Retrieve class names from the model
     class_names = result.names      
     print("class names:", class_names)
@@ -123,7 +121,7 @@ def extract_features(image_url):
         return None
 
 def retrieve_user_photos():
-    access_token = session.get('google_token')['access_token']
+    access_token = session['google_token']['access_token']
     headers = {
         'Authorization': 'Bearer ' + access_token,
         'Accept': 'application/json'
@@ -137,11 +135,12 @@ def retrieve_user_photos():
         raise Exception(f"Error retrieving user's photos: {response.status_code}")
 
 
-@app.route('/update-photos')
+@app.route('/update-photos' ,methods=['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
+@cross_origin(supports_credentials=True, )
 def update_photos():
     if 'google_token' not in session:
         return redirect(url_for('login'))
-
+    print("Processing user's photos")
     # Retrieve user's photos from Google Photos API
     photos = retrieve_user_photos()
     for photo in photos:
@@ -158,8 +157,9 @@ def update_photos():
                 insert_data(image_url, session.get('google_token')['user_id'], objects, features)
         else:
             print("Skipping photo - Already exists in the database")
-
     return 'Processing complete'
+
+
 
 @app.route('/check-login')
 def check_login():
