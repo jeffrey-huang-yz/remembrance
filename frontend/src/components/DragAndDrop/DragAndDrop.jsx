@@ -22,12 +22,13 @@ const DragAndDrop = ({ addFile, removeFile }) => {
         beforeUpload={beforeUploadHandler}
         onPreview={handlePreview}
         accept="image/*"
+        style={{color: "black", borderColor: "black"}}
       >
         <p className="ant-upload-drag-icon">
-          <PlusOutlined />
+          <PlusOutlined style={{color: "black"}}/>
         </p>
         <p className="ant-upload-text">
-          Click this area or drag files to upload
+          Click this area or drag files to upload <b>one</b> photo
         </p>
       </Dragger>
       {previewContent}

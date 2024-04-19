@@ -176,6 +176,24 @@ h1 {
 .submit{
   border-radius: 20px;
   background-color: black;
+  color:white;
+  outline: black;
+
+  &:hover{
+    background-color: white !important;
+    color: black !important;
+    border-color: black !important;
+  
+  }
+}
+
+
+
+.submit-card{
+  
+  justify-content: center;
+  align-items: center;
+  
 }
 
 

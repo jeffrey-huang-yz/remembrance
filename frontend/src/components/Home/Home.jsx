@@ -5,12 +5,12 @@ import axios from 'axios'
 import { Button, Card } from 'antd';
 import DragAndDrop from '../DragAndDrop/DragAndDrop';
 import useFileSelection from '../../hooks/useFileSelection';
-
+import Spline from '@splinetool/react-spline';
 
 const Home = () => {
     const [addFile, removeFile] = useFileSelection();
 
-    const [update, setUpdate] = useState(false)
+    const [update, setUpdate] = useState(true)
     useEffect(() => {
         axios.get('http://localhost:5000/update-photos', {
             withCredentials: true  // Set to true to send cookies
@@ -38,21 +38,24 @@ const Home = () => {
         <div className={`home ${update ? 'update-complete' : 'update-incomplete'}`}>
         {update ? (
             <div className="content">
-              {/* Text to display when update is complete */}
-                <h1>Update Complete!</h1>
-                <p>Your photos have been updated.</p>
+                <h1 className='title'>Remembrance</h1>
+                
                 <Card
                     className='submit-card'
                     style={{ margin: 'auto', width: '50%' }}
-                    actions={[<Button type="primary" className='submit'>Submit</Button>]}
+                    actions={[<Button className='submit' >Submit</Button>]}
                 >
+                    
                     <DragAndDrop addFile={addFile} removeFile={removeFile} />
                 </Card>         
-                <div className='ocean'>
-                    <div className='wave'></div>
-                    <div className='wave'></div>
-                </div>
+                <div>
+                        
+                <Spline scene="https://prod.spline.design/1HlDZLOg5jr4KS4W/scene.splinecode" />
+                
+
             </div>
+            </div>
+            
         ) : (
             <div>
                 <h1 className='loading animate-flicker'>Processing Your Google Photos</h1>
