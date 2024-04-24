@@ -6,11 +6,14 @@ import { Button, Card } from 'antd';
 import DragAndDrop from '../DragAndDrop/DragAndDrop';
 import useFileSelection from '../../hooks/useFileSelection';
 import Spline from '@splinetool/react-spline';
+import { useNavigate } from 'react-router-dom'; 
 
 const Home = () => {
-    const [addFile, removeFile] = useFileSelection();
+    const [selectedFiles, addFile, removeFile] = useFileSelection();
+    const [update, setUpdate] = useState(true);
 
-    const [update, setUpdate] = useState(true)
+
+    const navigate = useNavigate();
     useEffect(() => {
         axios.get('http://localhost:5000/update-photos', {
             withCredentials: true  // Set to true to send cookies
@@ -32,6 +35,13 @@ const Home = () => {
         });
     }, []);
 
+    const handleSubmit = () => {
+        console.log('Selected Files:', selectedFiles);
+        const uid = selectedFiles[0]?.uid;
+        
+        navigate('/results', {state: uid });
+    };
+
 
 
     return (
@@ -43,7 +53,7 @@ const Home = () => {
                 <Card
                     className='submit-card'
                     style={{ margin: 'auto', width: '50%' }}
-                    actions={[<Button className='submit' >Submit</Button>]}
+                    actions={[<Button className='submit' onClick={handleSubmit}>Submit</Button>]}
                 >
                     
                     <DragAndDrop addFile={addFile} removeFile={removeFile} />

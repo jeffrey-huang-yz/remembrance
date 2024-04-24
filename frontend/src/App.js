@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Switch } from 'react-router-dom
 import { redirect } from 'react-router';
 import LoginPage from './components/LoginPage/LoginPage';
 import Home from './components/Home/Home';
+import Results from './components/Results/Results';
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
     useEffect(() => {
@@ -29,6 +30,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<LoginPage />} exact />
         <Route path="/home" element={<Home />} exact/>
+        <Route path='results' element={<Results />} exact/>
       </Routes>
     </Router>
   );

@@ -16,7 +16,7 @@ const useFileSelection = () => {
     });
   };
 
-  return [addFile, removeFile];
+  return [selectedFiles, addFile, removeFile];
 };
 
 export default useFileSelection;
