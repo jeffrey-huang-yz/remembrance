@@ -19,10 +19,7 @@ const useFilePreview = () => {
       file.preview = await getBase64Representation(file.originFileObj);
     }
     setPreviewImage(file.url || file.preview);
-    setPreviewVisibility(true);
-    setPreviewTitle(
-      file.name || file.url.substring(file.url.lastIndexOf('/') + 1)
-    );
+    
   };
 
   const hidePreview = () => {

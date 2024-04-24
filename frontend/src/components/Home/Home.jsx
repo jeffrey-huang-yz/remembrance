@@ -11,9 +11,8 @@ import { useNavigate } from 'react-router-dom';
 const Home = () => {
     const [selectedFiles, addFile, removeFile] = useFileSelection();
     const [update, setUpdate] = useState(true);
-
-
     const navigate = useNavigate();
+    
     useEffect(() => {
         axios.get('http://localhost:5000/update-photos', {
             withCredentials: true  // Set to true to send cookies
@@ -37,9 +36,9 @@ const Home = () => {
 
     const handleSubmit = () => {
         console.log('Selected Files:', selectedFiles);
-        const uid = selectedFiles[0]?.uid;
+        const file = selectedFiles[0];
         
-        navigate('/results', {state: uid });
+        navigate('/results', {state: {photo: file} });
     };
 
 
