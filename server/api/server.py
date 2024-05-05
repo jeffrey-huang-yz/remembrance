@@ -178,7 +178,51 @@ def update_photos():
             print("Skipping photo - Already exists in the database")
     return 'Processing complete'
 
+# Define a route to handle file upload and similarity search
+@app.route('/find-similar-images', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def find_similar_images():
 
+    # Check if the POST request has the file part
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+
+    file = request.files['file']
+
+    # Check if the file is not empty
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+
+    # Check if the file is an image
+    if file and allowed_file(file.filename):
+        # Save the uploaded file to a temporary location
+        filename = secure_filename(file.filename)
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(file_path)
+
+        # Detect objects in the uploaded image
+        objects = detect_objects(file_path)
+
+        # Extract features from the uploaded image
+        features = extract_features_from_file(file_path)
+
+        # Find similar images in the database based on extracted features
+        similar_images = find_similar_images_in_db(features)
+
+        # Return the list of similar images to the client
+        return jsonify({'similar_images': similar_images}), 200
+    else:
+        return jsonify({'error': 'Invalid file format'}), 400
+    
+def compute_similarity(features1, features2):
+    # Implement a similarity metric, such as cosine similarity or Euclidean distance
+    # Here, you can use numpy's built-in functions to compute cosine similarity or Euclidean distance
+    similarity_score = np.dot(features1, features2) / (np.linalg.norm(features1) * np.linalg.norm(features2))
+    return similarity_score
+
+# Helper function to check if the file has an allowed extension
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/check-login')
 def check_login():

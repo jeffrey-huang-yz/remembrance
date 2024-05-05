@@ -1,43 +1,45 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import axios from 'axios';
+import PhotoCard from '../PhotoCard/PhotoCard';
 
 const Results = () => {
   const location = useLocation();
-  const [previewImage, setPreviewImage] = useState(null);
   const file = location.state.photo;
-
-  const getBase64Representation = (file) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-
-      if (file instanceof Blob) {
-        reader.readAsDataURL(file);
-      } else {
-        reject(new Error('File must be a Blob or File object'));
-      }
-    });
-
-  const handlePreview = async (file) => {
-    try {
-      if (!file.url && !file.preview) {
-        const base64Data = await getBase64Representation(file);
-        setPreviewImage(base64Data);
-      }
-    } catch (error) {
-      console.error('Error reading file:', error.message);
-    }
-  };
+  const [similarImages, setSimilarImages] = useState([]);
 
   useEffect(() => {
-    handlePreview(file);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    axios.get('http://localhost:5000/find-similar-images', formData, {
+      withCredentials: true,
+
+    })
+      .then((response) => {
+        console.log('Data received:', response.data);
+        setSimilarImages(response.data.similar_images);
+      })
+      .catch((error) => {
+        if (error.response) {
+          console.error('Server Error:', error.response.data);
+          console.error('Status Code:', error.response.status);
+        } else if (error.request) {
+          console.error('Network Error:', error.request);
+        } else {
+          console.error('Error:', error.message);
+        }
+      });
   }, [file]);
 
   return (
     <div>
       <h2>Selected Files</h2>
-      <img style={{ width: '100%' }} src={previewImage} alt="Preview" />
+      <PhotoCard file={file} />
+      <h2>Similar Images</h2>
+      {similarImages.map((image, index) => (
+        <img key={index} src={image} alt={`Similar Image ${index}`} />
+      ))}
     </div>
   );
 };
