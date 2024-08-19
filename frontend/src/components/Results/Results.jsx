@@ -13,23 +13,18 @@ const Results = () => {
     formData.append('file', file);
 
     axios.get('http://localhost:5000/find-similar-images', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      },
       withCredentials: true,
-
     })
-      .then((response) => {
-        console.log('Data received:', response.data);
-        setSimilarImages(response.data.similar_images);
-      })
-      .catch((error) => {
-        if (error.response) {
-          console.error('Server Error:', error.response.data);
-          console.error('Status Code:', error.response.status);
-        } else if (error.request) {
-          console.error('Network Error:', error.request);
-        } else {
-          console.error('Error:', error.message);
-        }
-      });
+    .then(response => {
+      console.log('Data received:', response.data);
+      setSimilarImages(response.data.similar_images);
+    })
+    .catch(error => {
+      console.log('Error:', error.response);
+    });
   }, [file]);
 
   return (
